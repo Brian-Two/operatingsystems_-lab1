@@ -109,15 +109,22 @@ void list_add_at_index(list_t *l, elem value, int index) {
   if (l == NULL) {
     return;
   }
-  if (index <= 1 || l->head == NULL) {
+  int length = list_length(l);
+  if (index < 1 || index > length + 1) {
+    return; // out of range: do nothing
+  }
+  if (index == 1) {
     list_add_to_front(l, value);
     return;
   }
   int pos = 1;
   node_t *prev = l->head;
-  while (prev->next != NULL && pos < index - 1) {
+  while (prev != NULL && pos < index - 1) {
     prev = prev->next;
     pos++;
+  }
+  if (prev == NULL) {
+    return;
   }
   node_t *new_node = getNode(value);
   new_node->next = prev->next;
@@ -145,6 +152,7 @@ elem list_remove_from_back(list_t *l) {
   free(curr);
   return val;
 }
+
 elem list_remove_from_front(list_t *l) {
   if (l == NULL || l->head == NULL) {
     return -1;
@@ -155,16 +163,17 @@ elem list_remove_from_front(list_t *l) {
   free(to_remove);
   return val;
 }
+
 elem list_remove_at_index(list_t *l, int index) {
   if (l == NULL || index <= 0 || l->head == NULL) {
     return -1;
   }
+  int length = list_length(l);
+  if (index > length) {
+    return -1;
+  }
   if (index == 1) {
-    node_t *to_remove = l->head;
-    elem val = to_remove->value;
-    l->head = to_remove->next;
-    free(to_remove);
-    return val;
+    return list_remove_from_front(l);
   }
   node_t *prev = l->head;
   int pos = 1;
